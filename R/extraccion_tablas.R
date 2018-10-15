@@ -104,7 +104,46 @@ colnames(tabla) <- nombres_tabla
 
 
 # Eliminacion filas en blanco ---------------------------------------------
+prueba_na <- tabla
 
+## Usar janitor para remover espacios en blanco:
+prueba_na[prueba_na == ""] = NA
+
+### Prueba para tener misma cantidad de observaciones en original como con NA
+stopifnot(nrow(prueba_na) == nrow(tabla))
+
+### Contar cantidad de filas con NA:
+sum(is.na(prueba_na$unidad_territorial))
+
+## Remover NA basados en la columna de unidad territorial:
+prueba_na <- prueba_na %>%
+  drop_na(unidad_territorial)
+
+stopifnot(sum(is.na(prueba_na$unidad_territorial)) == 0)
+
+tabla <- prueba_na
+
+## ELiminar filas que contienen "UNIDAD TERRITORIAL"
+tabla <- tabla %>%
+  filter(unidad_territorial != "UNIDAD TERRITORIAL")
+
+# Seleccion de distritos --------------------------------------------------
+
+## Generar nueva columna que contenga el canton al que pertenece el distrito:
+## Funcion con patron de encontrar hasta
+
+## Hacer nueva columna que contenga si hay canton que escriba canton, si
+## hay nombre de distrito que se traiga el numero que tiene:
+prueba <- mutate(tabla,
+                 secuencia =
+                   ifelse(str_detect(unidad_territorial, "CANTÓN"), "canton",
+                          str_extract(unidad_territorial, "\\d+")))
+
+uno <- which(tabla$secuencia == 1)
+startIndx <- uno[!(uno - 1) %in% uno]
+
+## Este sirve para tener los distritos porque estan completos con los datos:
+distritos <- na.omit(prueba_na)
 
 
 # Seleccion de cantones ---------------------------------------------------
