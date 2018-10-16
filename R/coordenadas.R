@@ -15,3 +15,7 @@ coord_canton <- function(canton) {
 
   return(coordenadas)
 }
+
+## como traer coordenadas para leflet lo dejamos en "crudo" o en otro
+## script ponemos para crear un mapa o solo para traer formato de coordenadas
+## especificas a leaflet
