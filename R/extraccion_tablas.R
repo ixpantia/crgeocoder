@@ -3,6 +3,7 @@ library(dplyr)
 library(tidyr)
 library(janitor)
 library(stringr)
+library(feather)
 
 # Extraccion de tablas del archivo ----------------------------------------
 archivo <- ("data/cuadros_coordenadas.pdf")
@@ -195,22 +196,31 @@ stopifnot(nrow(prueba) == 81) # EN algun lado hay dos cantones mas
 
 # Formato de valores en coordenadas y nombres -----------------------------
 
-## Para datos de distritos:
+## Para datos de distritos ----
 
+### Unidad territorial y canton:
+distritos <- distritos %>%
+  mutate(unidad_territorial = str_replace(unidad_territorial, "([0-9\\s]+)", ""),
+         canton = str_replace(canton, "([0-9\\s]+)", ""))
 
-### Unidad territorial:
-distritos_1 <- separate(distritos, unidad_territorial, into = c("num", "distrito"),
-                      sep = "[^a-z]+ ")
-
-nombres_distritos <- distritos
-
-nombres_distritos$unidad_territorial <- clean_names(nombres_distritos$unidad_territorial)
-### canton:
+distritos <-  distritos %>%
+  select(canton, everything())
 
 ### lat y long:
 
 
-## Para datos de cantones:
+## Para datos de cantones ----
+cantones <- cantones %>%
+  mutate(canton = str_replace(canton, "([0-9\\s]+)", ""))
+
+## Pasar columna canton al inicio del connjunto de datos
+cantones <- cantones %>%
+  select(canton, everything())
+
+### lat y long:
 
 
+# Exportacion de datos ----------------------------------------------------
 
+write_feather(cantones, "data/cantones.feather")
+write_feather(distritos, "data/distritos.feather")
