@@ -103,6 +103,10 @@ nombres_tabla <- c("unidad_territorial", "area", "poblacion",
 colnames(tabla) <- nombres_tabla
 
 
+# Eliminar ultima fila ----------------------------------------------------
+
+tabla <- tabla[-556, ]
+
 # Eliminacion filas en blanco ---------------------------------------------
 prueba_na <- tabla
 
@@ -139,14 +143,21 @@ prueba <- mutate(tabla,
                    ifelse(str_detect(unidad_territorial, "CANTÓN"), "canton",
                           str_extract(unidad_territorial, "\\d+")))
 
-uno <- which(tabla$secuencia == 1)
-startIndx <- uno[!(uno - 1) %in% uno]
+## Con solucion de stackoverflow:
+x <- gsub("^CANTÓN ", '', prueba$unidad_territorial)
+x[!grepl('^CANTÓN ', prueba$unidad_territorial)] <- NA
+prueba$canton <- ave(x, cumsum(!is.na(x)), FUN = function(xx) xx[1])
+
 
 ## Este sirve para tener los distritos porque estan completos con los datos:
 distritos <- na.omit(prueba_na)
 
 
 # Seleccion de cantones ---------------------------------------------------
+
+
+
+# Formato de coordenadas --------------------------------------------------
 
 
 
