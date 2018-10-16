@@ -1,9 +1,11 @@
 library(tabulizer)
 library(dplyr)
 library(tidyr)
+library(janitor)
+library(stringr)
 
 # Extraccion de tablas del archivo ----------------------------------------
-archivo <- ("/home/ronny/Desktop/github/crgeocoder/cuadros_coordenadas.pdf")
+archivo <- ("data/cuadros_coordenadas.pdf")
 tabla <- extract_tables(archivo, pages = 1:14)
 tabla <- do.call("rbind", tabla)
 resguardo <- tabla
@@ -94,7 +96,6 @@ stopifnot(ncol(hoja_1) == ncol(tabla))
 
 tabla <- rbind(hoja_1, tabla)
 
-
 # Nombres de la tabla -----------------------------------------------------
 nombres_tabla <- c("unidad_territorial", "area", "poblacion",
                    "latitud_geografica", "longitud_geografica",
@@ -131,25 +132,34 @@ tabla <- prueba_na
 tabla <- tabla %>%
   filter(unidad_territorial != "UNIDAD TERRITORIAL")
 
+## Conteo cantidad de cantones presentes en el conjunto de dato:
+sum(str_detect(tabla$unidad_territorial, "^CANTÓN")) # DA 81
+
+#### En la publicacon de la gaceta hay 81 cantones porque el canton
+#### de rio cuarto que es el #82 se creo hasta el 2017
+
 # Seleccion de distritos --------------------------------------------------
 
 ## Generar nueva columna que contenga el canton al que pertenece el distrito:
 
-## Con solucion de stackoverflow:
-x <- gsub('^CANTÓN ', '', tabla$unidad_territorial)
-x[!grepl('^CANTÓN ', tabla$unidad_territorial)] <- NA
+### Con solucion de stackoverflow:
+x <- gsub('^CANTÓN', '', tabla$unidad_territorial)
+x[!grepl('^CANTÓN', tabla$unidad_territorial)] <- NA
 tabla$canton <- ave(x, cumsum(!is.na(x)), FUN = function(xx) xx[1])
 
-## Este sirve para tener los distritos porque estan completos con los datos:
-distritos <- na.omit(tabla)
+### Este sirve para tener los distritos porque estan completos con los datos:
+distritos <- tabla %>%
+  filter(!str_detect(tabla$unidad_territorial, "^CANTÓN"))
 
-stopifnot((nrow(tabla) - nrow(distritos)) == 83)
-
+stopifnot((nrow(tabla) - nrow(distritos)) == 81)
 
 # Seleccion de cantones ---------------------------------------------------
 ## Seleccion fila con canton y la siguiente fila a cada una de estas:
 canton_posicion <- which(str_detect(tabla$unidad_territorial, "CANTÓN"))
+stopifnot(nrow(canton_posicion) == 81)
+
 canton_posicion_1 <- which(str_detect(tabla$unidad_territorial, "CANTÓN")) + 1
+stopifnot(nrow(canton_posicion_1) == 81)
 
 cantones <- tabla[c(canton_posicion, canton_posicion_1), ]
 cantones <- cantones %>%
@@ -160,35 +170,47 @@ stopifnot(length(cantones) != 162)
 ## Copiar la latitud y longitud de distrito de cabecera a cada canton
 cantones_coordenadas <- cantones %>%
   select(-area, -poblacion) %>%
-  na.omit() %>%
+  filter(!str_detect(cantones$unidad_territorial, "^CANTÓN")) %>%
   select(-unidad_territorial)
 
-# names(cantones_coordenadas)[names(cantones_coordenadas) == "canton"] <-
-#   "unidad_territorial"
 stopifnot(nrow(cantones_coordenadas) == nrow(canton_posicion))
 
-## Unir datos de cantones con datos de cantones coordenadas:
-## cantones_coordenadas ahora poseen coordenadas de sus
-## cantones de cabecera
+## Unir datos de cantones con datos de cantones coordenadas
+## cantones_coordenadas ahora poseen coordenadas de sus cantones de cabecera
 
 cantones_interes <- cantones %>%
   filter(is.na(latitud_geografica)) %>%
   select(area, poblacion, canton)
 
+# cantones_interes <- cantones %>%
+#   filter(!str_detect(cantones$unidad_territorial, "^CANTÓN")) %>%
+#   select(area, poblacion, canton)
+
 stopifnot(nrow(cantones_interes) == 81)
 stopifnot(length(unique(cantones_coordenadas$canton)) == length(unique(cantones_interes$canton)))
 
-prueba <- left_join(cantones_coordenadas, cantones_interes, by = "canton")
+cantones <- left_join(cantones_coordenadas, cantones_interes, by = "canton")
 
-which(prueba$canton == cantones_coordenadas$canton)
-df.unique <- prueba[!duplicated(prueba$canton), ]
-stopifnot(nrow(prueba != 81)) # EN algun lado hay dos cantones mas
+stopifnot(nrow(prueba) == 81) # EN algun lado hay dos cantones mas
 
-## Formatear nombres en tabla y cantones coordenadas para unir
+# Formato de valores en coordenadas y nombres -----------------------------
+
+## Para datos de distritos:
 
 
+### Unidad territorial:
+distritos_1 <- separate(distritos, unidad_territorial, into = c("num", "distrito"),
+                      sep = "[^a-z]+ ")
 
-# Formato de coordenadas --------------------------------------------------
+nombres_distritos <- distritos
+
+nombres_distritos$unidad_territorial <- clean_names(nombres_distritos$unidad_territorial)
+### canton:
+
+### lat y long:
+
+
+## Para datos de cantones:
 
 
 
