@@ -6,7 +6,7 @@ library(stringr)
 library(feather)
 
 # Extraccion de tablas del archivo ----------------------------------------
-archivo <- ("data/cuadros_coordenadas.pdf")
+archivo <- ("cuadros_coordenadas.pdf")
 tabla <- extract_tables(archivo, pages = 1:14)
 tabla <- do.call("rbind", tabla)
 resguardo <- tabla

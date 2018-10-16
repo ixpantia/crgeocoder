@@ -1,12 +1,12 @@
 Package: crgeocoder
-Title: Enriquecer datos con información geografica de Costa Rica
-Version: 0.0.0.9000
+Title: Enriquecer datos con información geográfica de Costa Rica
+Version: 0.0.1.9000
 Authors@R: c(
   person(family="ixpantia, SRL", role = "aut", email = "hola@ixpantia.com"),
   person("Frans", "van Dunné", role="cre", email="frans@ixpantia.com"),
   person("Ronny", "Hernandez Mora", role="ctb", email="ronny@ixpantia.com"))
 Description: Para poder usar mapas con datos de Costa Rica es necesario poder
-  enriquecer los datos con coordenadas. Este paquete reune datos de geo-
+  enriquecer los datos con coordenadas. Este paquete reúne datos de geo-
   localización de diferentes fuentes para hacerlo más accesibles.
 Depends: R (>= 3.4.4)
 Imports:
