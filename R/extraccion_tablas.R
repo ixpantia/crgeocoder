@@ -134,26 +134,57 @@ tabla <- tabla %>%
 # Seleccion de distritos --------------------------------------------------
 
 ## Generar nueva columna que contenga el canton al que pertenece el distrito:
-## Funcion con patron de encontrar hasta
-
-## Hacer nueva columna que contenga si hay canton que escriba canton, si
-## hay nombre de distrito que se traiga el numero que tiene:
-prueba <- mutate(tabla,
-                 secuencia =
-                   ifelse(str_detect(unidad_territorial, "CANTÓN"), "canton",
-                          str_extract(unidad_territorial, "\\d+")))
 
 ## Con solucion de stackoverflow:
-x <- gsub("^CANTÓN ", '', prueba$unidad_territorial)
-x[!grepl('^CANTÓN ', prueba$unidad_territorial)] <- NA
-prueba$canton <- ave(x, cumsum(!is.na(x)), FUN = function(xx) xx[1])
-
+x <- gsub('^CANTÓN ', '', tabla$unidad_territorial)
+x[!grepl('^CANTÓN ', tabla$unidad_territorial)] <- NA
+tabla$canton <- ave(x, cumsum(!is.na(x)), FUN = function(xx) xx[1])
 
 ## Este sirve para tener los distritos porque estan completos con los datos:
-distritos <- na.omit(prueba_na)
+distritos <- na.omit(tabla)
+
+stopifnot((nrow(tabla) - nrow(distritos)) == 83)
 
 
 # Seleccion de cantones ---------------------------------------------------
+## Seleccion fila con canton y la siguiente fila a cada una de estas:
+canton_posicion <- which(str_detect(tabla$unidad_territorial, "CANTÓN"))
+canton_posicion_1 <- which(str_detect(tabla$unidad_territorial, "CANTÓN")) + 1
+
+cantones <- tabla[c(canton_posicion, canton_posicion_1), ]
+cantones <- cantones %>%
+  arrange(canton)
+
+stopifnot(length(cantones) != 162)
+
+## Copiar la latitud y longitud de distrito de cabecera a cada canton
+cantones_coordenadas <- cantones %>%
+  select(-area, -poblacion) %>%
+  na.omit() %>%
+  select(-unidad_territorial)
+
+# names(cantones_coordenadas)[names(cantones_coordenadas) == "canton"] <-
+#   "unidad_territorial"
+stopifnot(nrow(cantones_coordenadas) == nrow(canton_posicion))
+
+## Unir datos de cantones con datos de cantones coordenadas:
+## cantones_coordenadas ahora poseen coordenadas de sus
+## cantones de cabecera
+
+cantones_interes <- cantones %>%
+  filter(is.na(latitud_geografica)) %>%
+  select(area, poblacion, canton)
+
+stopifnot(nrow(cantones_interes) == 81)
+stopifnot(length(unique(cantones_coordenadas$canton)) == length(unique(cantones_interes$canton)))
+
+prueba <- left_join(cantones_coordenadas, cantones_interes, by = "canton")
+
+which(prueba$canton == cantones_coordenadas$canton)
+df.unique <- prueba[!duplicated(prueba$canton), ]
+stopifnot(nrow(prueba != 81)) # EN algun lado hay dos cantones mas
+
+## Formatear nombres en tabla y cantones coordenadas para unir
 
 
 
