@@ -4,7 +4,7 @@
 \alias{distrito_wsg84}
 \title{Busca coordenadas de distritos en formato WSG84-GPS}
 \usage{
-distrito_wsg84(distrito)
+distrito_wsg84(canton, unidad_territorial)
 }
 \arguments{
 \item{canton}{}
