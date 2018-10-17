@@ -80,12 +80,13 @@ canton_wsg84 <- function(canton) {
 #'
 #' @return coordenadas Coordenadas del distrito en WSG84-GPS
 #' @export
-distrito_wsg84 <- function(distrito) {
+distrito_wsg84 <- function(canton, unidad_territorial) {
 
   distritos <- crgeodata$distritos
 
   coordenadas  <- distritos %>%
-    filter(unidad_territorial == !!distrito) %>%
+    filter(canton == !!canton) %>%
+    filter(unidad_territorial == !!unidad_territorial) %>%
     rename(lat = latitud_wgs84) %>%
     rename(lng = longitud_wsg84) %>%
     select(lat, lng)

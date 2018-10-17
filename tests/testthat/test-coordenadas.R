@@ -19,7 +19,8 @@ test_that("podemos leer coordenadas wsg84 para cantones", {
 })
 
 test_that("podemos leer coordenadas wsg84 para distritos", {
-  huacas <- distrito_wsg84("Huacas")
-  expect_equal(round(huacas$lat, 4), round(10.02136, 4))
-  expect_equal(round(huacas$lng, 4), round(-85.36528, 4))
+  huacas <- distrito_wsg84(canton = "Cartago",
+                           unidad_territorial = "Carmen")
+  expect_equal(round(huacas$lat, 4), round(9.87219, 4))
+  expect_equal(round(huacas$lng, 4), round(-83.9208, 4))
 })
