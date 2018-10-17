@@ -12,5 +12,5 @@ Street Map que se llama WSG84-GPS.
 
 Incluimos 471 distritos de Costa Rica
 
-![](crgeocoder/vignettes/img/distritos.png?raw=true "Distritos CR")
+![](vignettes/img/distritos.png?raw=true "Distritos CR")
       
