@@ -1,0 +1,96 @@
+---
+title: "Coordenadas de Costa Rica"
+author: "ixpantia"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Coordenadas de Costa Rica}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Proyecciones
+
+Costa Rica usa un sistema de coordenadas llamado CRTM05. Esto es diferente que
+el sistema que está en uso en Open Streetmap, quienes usan WGS84.
+
+- Referencias : https://epsg.io/5367
+- https://epsg.io/4326
+
+## Conversion de CRTM05 a WGS84-GPS
+
+### Cantones
+
+```{r, eval=FALSE}
+library(crgeocoder)
+library(leaflet)
+library(rgdal)
+
+cantones <- crdata$cantones
+
+coord_crtm05 <- cantones %>% 
+  mutate(lng = as.numeric(longitud_crtm05)) %>% 
+  mutate(lat = as.numeric(latitud_crtm05)) %>% 
+  select(lng, lat)
+
+coordinates(coord_crtm05) <- c("lng", "lat")
+proj4string(coord_crtm05) <- CRS("+proj=tmerc +lat_0=0 +lon_0=-84 +k=0.9999 +x_0=500000 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ") # crtm05
+WSG84 <- CRS("+proj=longlat +datum=WGS84 +no_defs ") #wgs84-gps
+coord_wsg84 <- spTransform(coord_crtm05, WSG84)
+
+coord <- as.data.frame(coord_wsg84)
+
+leaflet() %>% 
+  addTiles() %>% 
+  addMarkers(lng = coord$lng,
+             lat = coord$lat)
+
+cantones$latitud_wgs84 <- coord$lat
+cantones$longitud_wsg84 <- coord$lng
+```
+
+
+### distritos
+
+```{r, eval=FALSE}
+
+crdata$distritos <- crdata$distritos %>% 
+  filter(!is.na(longitud_crtm05)) %>% 
+  filter(longitud_crtm05 != "_")
+
+distritos <- crdata$distritos
+
+coord_crtm05 <- distritos %>% 
+  mutate(lng = as.numeric(longitud_crtm05)) %>% 
+  mutate(lat = as.numeric(latitud_crtm05)) %>% 
+  select(lng, lat)
+
+coordinates(coord_crtm05) <- c("lng", "lat")
+proj4string(coord_crtm05) <- CRS("+proj=tmerc +lat_0=0 +lon_0=-84 +k=0.9999 +x_0=500000 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ") # crtm05
+WSG84 <- CRS("+proj=longlat +datum=WGS84 +no_defs ") #wgs84-gps
+coord_wsg84 <- spTransform(coord_crtm05, WSG84)
+
+coord <- as.data.frame(coord_wsg84)
+
+leaflet() %>% 
+  addTiles() %>% 
+  addMarkers(lng = coord$lng,
+             lat = coord$lat)
+
+distritos$latitud_wgs84 <- coord$lat
+distritos$longitud_wsg84 <- coord$lng
+
+crgeodata <- list()
+crgeodata$cantones <- cantones
+crgeodata$distritos <- distritos
+devtools::use_data(crgeodata, internal = TRUE, overwrite = TRUE)
+```
