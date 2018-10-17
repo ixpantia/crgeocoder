@@ -61,7 +61,7 @@ cantones$longitud_wsg84 <- coord$lng
 
 ### distritos
 
-```{r}
+```{r, eval=FALSE}
 
 crdata$distritos <- crdata$distritos %>% 
   filter(!is.na(longitud_crtm05)) %>% 
