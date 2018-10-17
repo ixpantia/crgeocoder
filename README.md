@@ -8,4 +8,9 @@ En este paquet hicimos la traducción de las coordenadas oficiales, publicadas
 por el gobierno de Costa Rica en el sistem CRTM05 al sistema usada en Open
 Street Map que se llama WSG84-GPS.
 
+## Distritos
 
+Incluimos 471 distritos de Costa Rica
+
+![](crgeocoder/vignettes/img/distritos.png?raw=true "Distritos CR")
+      
