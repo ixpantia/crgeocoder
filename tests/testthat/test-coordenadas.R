@@ -24,3 +24,10 @@ test_that("podemos leer coordenadas wsg84 para distritos", {
   expect_equal(round(huacas$lat, 4), round(9.87219, 4))
   expect_equal(round(huacas$lng, 4), round(-83.9208, 4))
 })
+
+test_that("nos encargamos de datos faltantes distritos", {
+  huacas <- distrito_wsg84(canton = "escritorio",
+                           unidad_territorial = "Carmen")
+  expect_equal(round(huacas$lat, 4), round(9.87219, 4))
+  expect_equal(round(huacas$lng, 4), round(-83.9208, 4))
+})
