@@ -91,5 +91,13 @@ distrito_wsg84 <- function(canton, unidad_territorial) {
     rename(lng = longitud_wsg84) %>%
     select(lat, lng)
 
+  if (nrow(coordenadas) == 0 ) {
+    mensaje <- paste("No pude encontrar esa combinacion de canton y unidad territorial\n",
+                      canton, unidad_territorial )
+    warning(mensaje)
+    coordenadas <- data.frame(lat = NA,
+                              lng = NA)
+  }
+
   return(coordenadas)
 }
