@@ -7,7 +7,9 @@
 distrito_wsg84(canton, unidad_territorial)
 }
 \arguments{
-\item{canton}{}
+\item{canton}{el nombre del cantón}
+
+\item{unidad_territorial}{el nombre de la unidad territorial}
 }
 \value{
 coordenadas Coordenadas del distrito en WSG84-GPS

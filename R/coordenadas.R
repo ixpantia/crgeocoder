@@ -76,7 +76,8 @@ canton_wsg84 <- function(canton) {
 #' sobre el sistema WSG84-GPS, pero los datos oficiales de costa rica usan
 #' CRTM05. Esta función devuelve datos en WSG84-GPS.
 #'
-#' @param canton
+#' @param canton el nombre del cantón
+#' @param unidad_territorial el nombre de la unidad territorial
 #'
 #' @return coordenadas Coordenadas del distrito en WSG84-GPS
 #' @export
@@ -90,6 +91,78 @@ distrito_wsg84 <- function(canton, unidad_territorial) {
     rename(lat = latitud_wgs84) %>%
     rename(lng = longitud_wsg84) %>%
     select(lat, lng)
+
+  if (nrow(coordenadas) == 0 ) {
+    mensaje <- paste("No pude encontrar esa combinacion de canton y unidad territorial\n",
+                      canton, unidad_territorial )
+    warning(mensaje)
+    coordenadas <- data.frame(lat = NA,
+                              lng = NA)
+  }
+
+  return(coordenadas)
+}
+
+#' Busca coordenadas de cantones en formato CRTM05
+#'
+#' El sistema de coordenadas geograficas usadas por el gobierno de Costa Rica
+#' es CRTM05. Esta función devuelve estas coordenadas tal como se publicaron
+#' en
+#'
+#' La Gaceta No. 100 del 26 de mayo 2009
+#' DIVISIÓN TERRITORIAL ADMINISTRATIVA DE COSTA RICA
+#' SEGÚN DECRETO N° 35213-MG PUBLICADO EN
+#' LA GACETA No 85 DEL 5 DE MAYO DE 2009
+#'
+#' @param canton
+#'
+#' @return coordenadas Coordenadas del canton en WSG84-GPS
+#' @export
+canton_crtm05 <- function(canton) {
+
+  cantones <- crgeodata$cantones
+
+  coordenadas  <- cantones %>%
+    filter(canton == !!canton) %>%
+    rename(lat = latitud_crtm05) %>%
+    rename(lng = longitud_crtm05) %>%
+    select(lat, lng) %>%
+    mutate(lat = as.numeric(lat)) %>%
+    mutate(lng = as.numeric(lng))
+
+  return(coordenadas)
+}
+
+
+#' Busca coordenadas de distritos en formato CRTM05
+#'
+#' El sistema de coordenadas geograficas usadas por el gobierno de Costa Rica
+#' es CRTM05. Esta función devuelve estas coordenadas tal como se publicaron
+#' en
+#'
+#' La Gaceta No. 100 del 26 de mayo 2009
+#' DIVISIÓN TERRITORIAL ADMINISTRATIVA DE COSTA RICA
+#' SEGÚN DECRETO N° 35213-MG PUBLICADO EN
+#' LA GACETA No 85 DEL 5 DE MAYO DE 2009
+#'
+#'
+#' @param canton el nombre del cantón
+#' @param unidad_territorial el nombre de la unidad territorial
+#'
+#' @return coordenadas Coordenadas del distrito en WSG84-GPS
+#' @export
+distrito_crtm05 <- function(canton, unidad_territorial) {
+
+  distritos <- crgeodata$distritos
+
+  coordenadas  <- distritos %>%
+    filter(canton == !!canton) %>%
+    filter(unidad_territorial == !!unidad_territorial) %>%
+    rename(lat = latitud_crtm05) %>%
+    rename(lng = longitud_crtm05) %>%
+    select(lat, lng) %>%
+    mutate(lat = as.numeric(lat)) %>%
+    mutate(lng = as.numeric(lng))
 
   if (nrow(coordenadas) == 0 ) {
     mensaje <- paste("No pude encontrar esa combinacion de canton y unidad territorial\n",
