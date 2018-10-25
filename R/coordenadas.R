@@ -7,7 +7,7 @@ NULL
 #' Muestra los datos que tenemos para cantones. Sin argumentos (o con el
 #' argumento "todo") la función va mostrar todos los datos disponibles.
 #'
-#' @param canton
+#' @param canton Nombre del cantón
 #'
 #' @return
 #' @export
@@ -29,7 +29,7 @@ crgeo_canton <- function(canton = "todo") {
 #' Muestra los datos que tenemos para distritos. Sin argumentos (o con el
 #' argumento "todo") la función va mostrar todos los datos disponibles.
 #'
-#' @param canton
+#' @param distrito Nombre del distrito
 #'
 #' @return coordenadas
 #' @export
@@ -52,9 +52,9 @@ crgeo_distrito <- function(distrito = "todo") {
 #' sobre el sistema WSG84-GPS, pero los datos oficiales de costa rica usan
 #' CRTM05. Esta función devuelve datos en WSG84-GPS.
 #'
-#' @param canton
+#' @param canton Nombre del cantón.
 #'
-#' @return coordenadas Coordenadas del canton en WSG84-GPS
+#' @return Coordenadas del canton en WSG84-GPS
 #' @export
 canton_wsg84 <- function(canton) {
 
@@ -73,11 +73,11 @@ canton_wsg84 <- function(canton) {
 #' Busca coordenadas de distritos en formato WSG84-GPS
 #'
 #' Para poder crear mapas con, por ejemplo, Leaflet necesitamos coordenadas
-#' sobre el sistema WSG84-GPS, pero los datos oficiales de costa rica usan
-#' CRTM05. Esta función devuelve datos en WSG84-GPS.
+#' sobre el sistema WSG84-GPS, pero los datos oficiales de Costa Rica usan
+#' formato CRTM05. Esta función devuelve datos en WSG84-GPS.
 #'
 #' @param canton el nombre del cantón
-#' @param unidad_territorial el nombre de la unidad territorial
+#' @param unidad_territorial el nombre del distrito perteneciente al cantón indicado
 #'
 #' @return coordenadas Coordenadas del distrito en WSG84-GPS
 #' @export
@@ -105,7 +105,7 @@ distrito_wsg84 <- function(canton, unidad_territorial) {
 
 #' Busca coordenadas de cantones en formato CRTM05
 #'
-#' El sistema de coordenadas geograficas usadas por el gobierno de Costa Rica
+#' El sistema de coordenadas geográficas usadas por el gobierno de Costa Rica
 #' es CRTM05. Esta función devuelve estas coordenadas tal como se publicaron
 #' en
 #'
@@ -116,7 +116,7 @@ distrito_wsg84 <- function(canton, unidad_territorial) {
 #'
 #' @param canton
 #'
-#' @return coordenadas Coordenadas del canton en WSG84-GPS
+#' @return Coordenadas del canton en WSG84-GPS
 #' @export
 canton_crtm05 <- function(canton) {
 
@@ -147,7 +147,7 @@ canton_crtm05 <- function(canton) {
 #'
 #'
 #' @param canton el nombre del cantón
-#' @param unidad_territorial el nombre de la unidad territorial
+#' @param unidad_territorial el nombre del distrito perteneciente al cantón indicado
 #'
 #' @return coordenadas Coordenadas del distrito en WSG84-GPS
 #' @export
@@ -174,3 +174,5 @@ distrito_crtm05 <- function(canton, unidad_territorial) {
 
   return(coordenadas)
 }
+
+
