@@ -29,7 +29,7 @@ crgeo_canton <- function(canton = "todo") {
 #' Muestra los datos que tenemos para distritos. Sin argumentos (o con el
 #' argumento "todo") la función va mostrar todos los datos disponibles.
 #'
-#' @param canton Nombre del cantón
+#' @param distrito Nombre del distrito
 #'
 #' @return coordenadas
 #' @export
